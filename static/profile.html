@@ -1,0 +1,364 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Login page</title>
+    <script src="utils.js"></script>
+    <link rel="shortcut icon" href="favicon.ico"/>
+</head>
+<body>
+<canvas></canvas>
+<div class="generalContainer">
+    <div class="innerContainer">
+        <div class="container">
+            <div class="formclass">
+              <input id= "femail" type="text" placeholder="Email" name="femail" equired>  
+              <input id="fname" type="email" placeholder="Fullname" name="fname" required>
+                <input id="ftelephone" type="text" placeholder="Telephone" name="ftelephone" required>                
+                <button id="start" type="submit" onclick="save()">Save & Continue</button><br><br>
+                <button id="start" onclick="location.href='userhome.html'">Cancel</button><br><br>
+                
+            </div>        
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        margin:auto;
+        width:100%;
+        height:100%;
+    }
+
+    .formclass {
+        width: 70%;
+        text-align: center;
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%;
+        position:absolute;
+        background-color:#2d2d2d;
+    }
+
+    .generalContainer {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        box-sizing:border-box;
+    }
+
+    .innerContainer {
+        display: flex;
+        height:100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin:auto;
+    }
+
+    input[type=text], input[type=password], input[type=email] {
+        width: 100%;
+        padding: 15px 10px;
+        margin: 10px 5px;
+        display: inline-block;
+        box-sizing: border-box;
+        font-size: 15px;
+        color:#2d2d2d;
+        border-radius:10px;
+        border: white;
+        background: white;
+        outline: none;
+    }
+
+    #start{
+        background: #0000;
+        font-size:16px;
+        color: white;
+        padding: 15px 10px;
+        margin-top: 15px;
+        margin-left: 5px;
+        border: 5px;
+        cursor: pointer;
+        width: 400px;
+        border: 1px solid;
+        border-radius:10px;
+        border-color:#fff;
+    }
+
+    #start:hover{
+        border-color:#f19203;
+        color:#f19203;
+        transition:all 0.2s ease-in-out;
+        -webkit-transition:all 0.2s ease-in-out;
+        -moz-transition:all 0.2s ease-in-out;
+    }
+
+
+    /* Center the avatar image inside this container */
+    .imgcontainer {
+        text-align: center;
+        margin: 24px 0 12px 0;
+    }
+
+    /* Avatar image */
+    img.avatar {
+        width: 35%;
+    }
+
+    .container {
+        z-index:999;
+        background:rgba(0, 0, 0, 0.6);
+        box-shadow: 0 0 50px 5px rgba(0, 0, 0, 0.3);
+        display: flex;
+        width:600px;
+        height:500px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Google */
+    #google {
+        width:200px;
+        height:48px;
+        background-size: 100% 100%;
+        cursor: pointer;
+    }
+
+    #google:hover{
+        background-size: 200px 40px;
+        background-size: 100% 100%;
+    }
+
+    .buttonGoogle{
+        padding: 0px;
+        background-color: transparent;
+        border-color: transparent;
+        margin: 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .container {
+            width:100%;
+            min-width:600px;
+            height:auto;
+            padding:40px;
+        }
+
+        .imgcontainer {
+            width:100%;
+            margin:40px 0 !important;
+        }
+
+        form {
+            width:90%;
+        }
+
+        input[type=text], input[type=password], input[type=email] {
+            font-size:1.7em;
+            padding:20px;
+        }
+
+        #start {
+            width:100%;
+            font-size:1.7em;
+            padding:20px;
+        }
+    }
+</style>
+
+<script>
+    var canvas = document.querySelector("canvas");
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    var ctx = canvas.getContext("2d");
+
+    var TAU = 2 * Math.PI;
+
+    times = [];
+    function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        update();
+        draw();
+        requestAnimationFrame(loop);
+    }
+
+    function Ball (startX, startY, startVelX, startVelY) {
+        this.x = startX || Math.random() * canvas.width;
+        this.y = startY || Math.random() * canvas.height;
+        this.vel = {
+            x: startVelX || Math.random() * 1 - 1,
+            y: startVelY || Math.random() * 1 - 1
+        };
+        this.update = function(canvas) {
+            if (this.x > canvas.width + 0 || this.x < -0) {
+                this.vel.x = -this.vel.x;
+            }
+            if (this.y > canvas.height + 0 || this.y < -0) {
+                this.vel.y = -this.vel.y;
+            }
+            this.x += this.vel.x;
+            this.y += this.vel.y;
+        };
+        this.draw = function(ctx, can) {
+            ctx.beginPath();
+            var distM = distMouse(this);
+            if (distM > 200) {
+                ctx.fillStyle = "#2e6299";
+                ctx.globalAlpha = .4;
+            } else {
+                ctx.fillStyle = '#fbb145';
+                ctx.globalAlpha = 1 - distM / 240;
+            }
+            ctx.arc((0.5 + this.x) | 0, (0.5 + this.y) | 0, 10, 0, TAU, false);
+            ctx.fill();
+        }
+    }
+
+    var balls = [];
+    for (var i = 0; i < canvas.width * canvas.height / (605*25); i++) {
+        balls.push(new Ball(Math.random() * canvas.width, Math.random() * canvas.height));
+    }
+
+    var lastTime = Date.now();
+    function update() {
+        var diff = Date.now() - lastTime;
+        for (var frame = 0; frame * 260 < diff; frame++) {
+            for (var index = 0; index < balls.length; index++) {
+                balls[index].update(canvas);
+            }
+        }
+        lastTime = Date.now();
+    }
+    var mouseX = -1e9, mouseY = -1e9;
+    document.addEventListener('mousemove', function(event) {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    });
+
+    function distMouse(ball) {
+        return Math.hypot(ball.x - mouseX, ball.y - mouseY);
+    }
+
+    function draw() {
+        for (var index = 0; index < balls.length; index++) {
+            var ball = balls[index];
+            ctx.beginPath();
+            for (var index2 = balls.length - 1; index2 > index; index2 += -1) {
+                var ball2 = balls[index2];
+                var dist = Math.hypot(ball.x - ball2.x, ball.y - ball2.y);
+                if (dist < 100) {
+                    var distM = distMouse(ball2);
+                    if (distM > 150) {
+                        ctx.strokeStyle = "#eaeaea";
+                        ctx.globalAlpha = .5;
+                    } else {
+                        ctx.globalAlpha = 0;
+                    }
+                    ctx.moveTo((0.5 + ball.x) | 0, (0.5 + ball.y) | 0);
+                    ctx.lineTo((0.5 + ball2.x) | 0, (0.5 + ball2.y) | 0);
+                }
+            }
+            ctx.stroke();
+            ball.draw(ctx, canvas);
+        }
+    }
+
+    // Start
+    loop();
+    var googleUser = {};
+
+    
+    function checkErrors(){
+      function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+        const err = getParameterByName("error")
+        if(err != null && getParameterByName("error") != ""){
+            window.alert(getParameterByName("error"));
+        }
+    }
+    document.addEventListener('DOMContentLoaded',checkErrors);    
+
+    function loadData(){
+            let xhr = new XMLHttpRequest();
+                xhr.open("GET", "/users/get");
+
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.setRequestHeader("Token", getToken());
+
+                xhr.onload = () => {
+                    let resp = JSON.parse(xhr.responseText)
+                    if(xhr.status==200){                        
+                        document.getElementById('femail').value = resp.username
+                        document.getElementById('fname').value = resp.fullname
+                        document.getElementById('ftelephone').value = resp.telephone
+                    }else{
+                        eraseCookieAndGoToLogin()
+                    }
+                };
+
+                xhr.addEventListener('error', function(){
+                    window.alert(resp.message)
+                });
+
+                let data = {
+                    "token": getToken()
+                };
+
+                xhr.send(JSON.stringify(data));
+        }
+        loadData();
+
+
+    function save(){
+        var username = document.getElementById("femail").value;
+        var fullname = document.getElementById("fname").value;
+        var telephone = document.getElementById("ftelephone").value;
+        if (username == "" || fullname == "" || telephone == "") {
+            window.alert('Complete all fields please')
+        } else {
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/users/update");
+
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("Token", getToken());
+
+            xhr.onload = () => {
+                let resp = JSON.parse(xhr.responseText)
+                if(xhr.status==200){                                            
+                    window.location.href = "userhome.html";
+                }else if(status==401){
+                    eraseCookieAndGoToLogin()
+                }else{
+                    window.alert(resp.message)
+                }
+            };
+
+            xhr.addEventListener('error', function(){
+                window.alert(resp.message)
+            });
+
+            let data = {
+                "username": username,
+                "fullname": fullname,
+                "telephone": telephone,
+            };
+
+            xhr.send(JSON.stringify(data));
+            
+        }
+    }   
+</script>
+
+
+
+</body></html>

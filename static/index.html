@@ -1,0 +1,388 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Login page</title>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="utils.js"></script>
+    <link rel="shortcut icon" href="favicon.ico"/>
+</head>
+<body>
+<canvas></canvas>
+<div class="generalContainer">
+    <div class="innerContainer">
+        <div class="container">
+            <div class="formclass">
+                <input id="femail" type="email" placeholder="Email" name="femail" required>
+                <input id="fpassword" type="password" placeholder="Password" name="fpassword" required>
+                <button id="start" type="submit" onclick="login()">Log in</button><br><br>
+            </div>
+            <button id="customBtn" class="buttonGoogle" googlestyle="display:none"><img id="google" style="border:0px;" src="https://github.com/dnlbox/guara/blob/master/app/images/sign-in/btn_google_signin_light_normal_web@2x.png?raw=true"></button><br><br>
+
+            <button id="signup" onclick="location.href='signup.html'">Sign-Up!</button><br><br>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        margin:auto;
+        width:100%;
+        height:100%;
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%;
+        position:absolute;
+        background-color:#2d2d2d;
+    }
+
+    .generalContainer {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        box-sizing:border-box;
+    }
+
+    .innerContainer {
+        display: flex;
+        height:100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin:auto;
+    }
+
+    input[type=text], input[type=password], input[type=email] {
+        width: 100%;
+        padding: 15px 10px;
+        margin: 10px 5px;
+        display: inline-block;
+        box-sizing: border-box;
+        font-size: 15px;
+        color:#2d2d2d;
+        border-radius:10px;
+        border: white;
+        background: white;
+        outline: none;
+    }
+
+    #start{
+        background: #0000;
+        font-size:16px;
+        color: white;
+        padding: 15px 10px;
+        margin-top: 15px;
+        margin-left: 5px;
+        border: 5px;
+        cursor: pointer;
+        width: 400px;
+        border: 1px solid;
+        border-radius:10px;
+        border-color:#fff;
+    }
+
+    #start:hover{
+        border-color:#f19203;
+        color:#f19203;
+        transition:all 0.2s ease-in-out;
+        -webkit-transition:all 0.2s ease-in-out;
+        -moz-transition:all 0.2s ease-in-out;
+    }
+
+    #signup{
+        background: #0000;
+        font-size:16px;
+        color: white;
+        padding: 15px 10px;
+        border: 5px;
+        cursor: pointer;        
+        border: 1px solid;
+        border-radius:10px;
+        border-color:#fff;
+    }
+
+    #signup:hover{
+        border-color:#f19203;
+        color:#f19203;
+        transition:all 0.2s ease-in-out;
+        -webkit-transition:all 0.2s ease-in-out;
+        -moz-transition:all 0.2s ease-in-out;
+    }
+
+
+    /* Center the avatar image inside this container */
+    .imgcontainer {
+        text-align: center;
+        margin: 24px 0 12px 0;
+    }
+
+    /* Avatar image */
+    img.avatar {
+        width: 35%;
+    }
+
+    .container {
+        z-index:999;
+        background:rgba(0, 0, 0, 0.6);
+        box-shadow: 0 0 50px 5px rgba(0, 0, 0, 0.3);
+        display: flex;
+        width:600px;
+        height:500px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Google */
+    #google {
+        width:200px;
+        height:48px;
+        background-size: 100% 100%;
+        cursor: pointer;
+    }
+
+    .formclass {
+        width: 70%;
+        text-align: center;
+    }
+
+    #google:hover{
+        background-size: 200px 40px;
+        background-size: 100% 100%;
+    }
+
+    .buttonGoogle{
+        padding: 0px;
+        background-color: transparent;
+        border-color: transparent;
+    }
+
+    @media (max-width: 1024px) {
+        .container {
+            width:100%;
+            min-width:600px;
+            height:auto;
+            padding:40px;
+        }
+
+        .imgcontainer {
+            width:100%;
+            margin:40px 0 !important;
+        }
+        
+
+        input[type=text], input[type=password], input[type=email] {
+            font-size:1.7em;
+            padding:20px;
+        }
+
+        #start {
+            width:100%;
+            font-size:1.7em;
+            padding:20px;
+        }
+    }
+</style>
+
+<script>
+    var canvas = document.querySelector("canvas");
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    var ctx = canvas.getContext("2d");
+
+    var TAU = 2 * Math.PI;
+
+    times = [];
+    function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        update();
+        draw();
+        requestAnimationFrame(loop);
+    }
+
+    function Ball (startX, startY, startVelX, startVelY) {
+        this.x = startX || Math.random() * canvas.width;
+        this.y = startY || Math.random() * canvas.height;
+        this.vel = {
+            x: startVelX || Math.random() * 1 - 1,
+            y: startVelY || Math.random() * 1 - 1
+        };
+        this.update = function(canvas) {
+            if (this.x > canvas.width + 0 || this.x < -0) {
+                this.vel.x = -this.vel.x;
+            }
+            if (this.y > canvas.height + 0 || this.y < -0) {
+                this.vel.y = -this.vel.y;
+            }
+            this.x += this.vel.x;
+            this.y += this.vel.y;
+        };
+        this.draw = function(ctx, can) {
+            ctx.beginPath();
+            var distM = distMouse(this);
+            if (distM > 200) {
+                ctx.fillStyle = "#2e6299";
+                ctx.globalAlpha = .4;
+            } else {
+                ctx.fillStyle = '#fbb145';
+                ctx.globalAlpha = 1 - distM / 240;
+            }
+            ctx.arc((0.5 + this.x) | 0, (0.5 + this.y) | 0, 10, 0, TAU, false);
+            ctx.fill();
+        }
+    }
+
+    var balls = [];
+    for (var i = 0; i < canvas.width * canvas.height / (605*25); i++) {
+        balls.push(new Ball(Math.random() * canvas.width, Math.random() * canvas.height));
+    }
+
+    var lastTime = Date.now();
+    function update() {
+        var diff = Date.now() - lastTime;
+        for (var frame = 0; frame * 260 < diff; frame++) {
+            for (var index = 0; index < balls.length; index++) {
+                balls[index].update(canvas);
+            }
+        }
+        lastTime = Date.now();
+    }
+    var mouseX = -1e9, mouseY = -1e9;
+    document.addEventListener('mousemove', function(event) {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    });
+    
+    function distMouse(ball) {
+        return Math.hypot(ball.x - mouseX, ball.y - mouseY);
+    }
+
+    function draw() {
+        for (var index = 0; index < balls.length; index++) {
+            var ball = balls[index];
+            ctx.beginPath();
+            for (var index2 = balls.length - 1; index2 > index; index2 += -1) {
+                var ball2 = balls[index2];
+                var dist = Math.hypot(ball.x - ball2.x, ball.y - ball2.y);
+                if (dist < 100) {
+                    var distM = distMouse(ball2);
+                    if (distM > 150) {
+                        ctx.strokeStyle = "#eaeaea";
+                        ctx.globalAlpha = .5;
+                    } else {
+                        ctx.globalAlpha = 0;
+                    }
+                    ctx.moveTo((0.5 + ball.x) | 0, (0.5 + ball.y) | 0);
+                    ctx.lineTo((0.5 + ball2.x) | 0, (0.5 + ball2.y) | 0);
+                }
+            }
+            ctx.stroke();
+            ball.draw(ctx, canvas);
+        }
+    }
+
+    function login(){
+        var username = document.getElementById("femail").value;
+        var password = document.getElementById("fpassword").value;
+        if (username == "" || password == "") {
+                window.alert('Complete all fields please')
+        } else {
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/auth/dologin");
+
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onload = () => {
+                let resp = JSON.parse(xhr.responseText)
+                if(xhr.status==200){                        
+                    setCookie("token", resp.message, 7)
+                    window.location.href = "userhome.html";
+                }else{
+                    window.alert(resp.message)
+                }
+            };
+
+            xhr.addEventListener('error', function(){
+                window.alert(resp.message)
+            });
+
+            let data = {
+                "username": username,
+                "password": password,
+            };
+
+            xhr.send(JSON.stringify(data));
+            
+        }
+    }
+
+    function loginByGoogle(googleToken){
+        let xhr = new XMLHttpRequest();
+            xhr.open("GET", "/auth/loginByGoogle");
+
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("GoogleToken", googleToken);
+
+
+            xhr.onload = () => {
+                let resp = JSON.parse(xhr.responseText)
+                if(xhr.status==200){                        
+                    setCookie("token", resp.message, 7)
+                    window.location.href = "userhome.html";
+                }else{
+                    window.alert(resp.message)
+                }
+            };
+
+            xhr.addEventListener('error', function(){
+                window.alert(resp.message)
+            });
+
+            let data = {
+            };
+
+            xhr.send(JSON.stringify(data));
+    }
+    // Start
+    loop();
+    
+    var startApp = function() {
+        gapi.load('auth2', function(){
+            auth2 = gapi.auth2.init({
+                client_id: '143641525700-t4mnlhc6ep0gg603a0sdq41vicrkm9qe.apps.googleusercontent.com',
+                cookiepolicy: 'single_host_origin',
+                plugin_name: '143641525700-t4mnlhc6ep0gg603a0sdq41vicrkm9qe.apps.googleusercontent.com'
+            });
+            
+            attachSignin(document.getElementById('customBtn'));
+        });
+    };
+
+    function attachSignin(element) {
+        console.log(element.id);
+
+        auth2.attachClickHandler(element, {},
+            function(googleUser) {
+                function findToken(google) {
+                    for(x in googleUser){
+                        if(googleUser[x].id_token != undefined){
+                            return googleUser[x].id_token;
+                        }
+                    }
+                    return "";
+                }
+                let googleToken = findToken(googleUser)
+                loginByGoogle(googleToken)
+            }, function(error) {
+                alert(JSON.stringify(error, undefined, 2));
+            });
+    }
+
+    startApp();
+</script>
+
+
+
+</body></html>
